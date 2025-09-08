@@ -9,58 +9,63 @@ import cv2
 sd = ShapeDetector()
 cl = ColorLabeler()
 
-# open webcam
+# Inisialisasi video capture, shape detector, dan color labeler
 cap = cv2.VideoCapture(1)
-
-# Inisialisasi ShapeDetector
 sd = ShapeDetector()
+cl = ColorLabeler()
 
-# Loop utama untuk memproses setiap frame dari video
+# Loop utama
 while True:
-    # Baca frame dari kamera
     ret, frame = cap.read()
     if not ret:
-        print("Gagal mengambil frame dari kamera.")
         break
 
-    # Preprocessing frame
+    # Preprocessing untuk deteksi bentuk
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (7, 7), 0)
     canny_edges = cv2.Canny(blurred, 50, 150)
 
+    # Preprocessing untuk deteksi warna (Konversi ke LAB color space)
+    # Ini dilakukan sekali per frame
+    lab_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
+
     # Temukan kontur
     contours, _ = cv2.findContours(canny_edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # Loop melalui setiap kontur yang relevan
+    # Loop melalui setiap kontur
     for c in contours:
-        # Filter kontur kecil yang kemungkinan besar adalah noise
         if cv2.contourArea(c) < 800:
             continue
 
-        # Dapatkan nama bentuk dari kontur
+        # Deteksi bentuk
         shape = sd.detect(c)
 
-        # --- KUNCI UTAMA: Hanya gambar jika bentuknya adalah yang kita inginkan ---
+        # Jika bentuknya adalah yang kita inginkan, lanjutkan deteksi warna
         if shape in ["circle", "square", "rectangle"]:
-            # Dapatkan koordinat untuk menggambar
+            # Deteksi warna
+            color = cl.label(lab_frame, c)
+
+            # Gabungkan label warna dan bentuk
+            text = f"{color} {shape}"
+
+            # Dapatkan koordinat untuk menggambar teks
             M = cv2.moments(c)
             if M["m00"] == 0: continue
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])
-
-            # Gambar kontur dan label nama bentuk pada frame
+            
+            # Gambar kontur dan teks gabungan pada frame
             cv2.drawContours(frame, [c], -1, (0, 255, 0), 2)
-            cv2.putText(frame, shape, (cX - 25, cY), cv2.FONT_HERSHEY_SIMPLEX,
+            cv2.putText(frame, text, (cX - 40, cY), cv2.FONT_HERSHEY_SIMPLEX,
                         0.7, (255, 255, 255), 2)
 
-    # Tampilkan frame hasil deteksi
-    cv2.imshow("Shape Detection (Live)", frame)
+    # Tampilkan hasilnya
+    cv2.imshow("Shape and Color Detection", frame)
 
-    # Tombol untuk keluar dari loop (tekan 'q')
+    # Tekan 'q' untuk keluar
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
         break
 
-# Hentikan video capture dan tutup semua jendela
 cap.release()
 cv2.destroyAllWindows()
