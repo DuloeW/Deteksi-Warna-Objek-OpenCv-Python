@@ -6,7 +6,7 @@ import imutils
 import cv2
 
 # Inisialisasi
-cap = cv2.VideoCapture(0) 
+cap = cv2.VideoCapture(1) 
 sd = ShapeDetector()
 cl = ColorLabeler()
 
@@ -23,11 +23,15 @@ while True:
     (h, w) = frame.shape[:2]
     centerX_frame, centerY_frame = w // 2, h // 2
 
+
     # --- Preprocessing Gambar ---
     lab_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (7, 7), 0)
     canny_edges = cv2.Canny(blurred, 50, 150)
+
+    # Tampilkan outline (deteksi tepi) di window baru
+    cv2.imshow("Outline Deteksi (Canny)", canny_edges)
 
     # Temukan kontur
     contours, _ = cv2.findContours(canny_edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -63,7 +67,7 @@ while True:
             cv2.putText(frame, text, (cX_obj - 40, cY_obj), cv2.FONT_HERSHEY_SIMPLEX,
                         0.7, (255, 255, 255), 2)
 
-    # Tampilkan hasil
+    # Tampilkan hasil deteksi objek di window utama
     cv2.imshow("Deteksi Objek (Optimasi)", frame)
 
     # Tekan 'q' untuk keluar
