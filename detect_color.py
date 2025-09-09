@@ -31,7 +31,7 @@ while True:
     canny_edges = cv2.Canny(blurred, 50, 150)
 
     # Tampilkan outline (deteksi tepi) di window baru
-    cv2.imshow("Outline Deteksi (Canny)", canny_edges)
+    # cv2.imshow("Outline Deteksi (Canny)", canny_edges)
 
     # Temukan kontur
     contours, _ = cv2.findContours(canny_edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
