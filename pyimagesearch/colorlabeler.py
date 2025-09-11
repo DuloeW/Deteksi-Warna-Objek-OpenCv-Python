@@ -23,6 +23,7 @@ class ColorLabeler:
             "blue3": (0, 191, 255), 
             "blue4": (30, 144, 255),
             "blue5": (70, 130, 180),
+            "white": (255, 255, 255),
         })
         # allocate memory for the L*a*b* image, then initialize
         # the color names list
