@@ -2,6 +2,12 @@
 `https://github.com/DuloeW/Deteksi-Warna-Objek-OpenCv-Python.git`
 
 # Instalation
+
+## Create the venv
+```bash
+python -m venv
+```
+
 ## Install the package
 ```bash
 pip install opencv-python
