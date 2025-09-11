@@ -1,10 +1,15 @@
 # Clone this repo
-[Url](https://github.com/DuloeW/Deteksi-Warna-Objek-OpenCv-Python.git)
+`https://github.com/DuloeW/Deteksi-Warna-Objek-OpenCv-Python.git`
 
+# Instalation
 # Active the venv
-`.venv\Scripts\Activate`
+```bash
+    .venv\Scripts\Activate
+```
 
 # Run the file
-`python detect_color.py`
+```bash
+    python detect_color.py
+```
 
 
