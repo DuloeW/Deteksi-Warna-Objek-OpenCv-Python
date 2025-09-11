@@ -8,16 +8,22 @@ class ColorLabeler:
         # initialize the colors dictionary, containing the color
         # name as the key and the RGB tuple as the value
         colors = OrderedDict({
-            "red": (255, 0, 0),
-            "green": (0, 163, 108),
-            "blue": (29, 121, 242),
-            "orange": (243, 134, 48),
-            "yellow": (255, 247, 0),
-            "pink": (247, 142, 172),
-            "purple": (135, 95, 163),
-            "light-blue": (102, 204, 255),
-            "black": (0, 0, 0),
-            "gray": (128, 128, 128),})
+            "orange1": (255, 98, 0),
+            "orange2": (253, 127, 44),
+            "orange3": (253, 147, 70),
+            "orange4": (253, 167, 102),
+            "orange5": (253, 183, 119),
+            "red1": (182, 8, 13),
+            "red2": (221, 17, 27),
+            "red3": (246, 26, 35),
+            "red4": (255, 50, 50),
+            "red5": (255, 70, 70),
+            "blue1": (0, 116, 217),    
+            "blue2": (0, 150, 255), 
+            "blue3": (0, 191, 255), 
+            "blue4": (30, 144, 255),
+            "blue5": (70, 130, 180),
+        })
         # allocate memory for the L*a*b* image, then initialize
         # the color names list
         self.lab = np.zeros((len(colors), 1, 3), dtype="uint8")
