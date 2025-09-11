@@ -10,7 +10,7 @@ pip install numpy
 ```
 ## Active the venv
 ```bash
-.venv\Scripts\Activate
+.\venv\Scripts\Activate
 ```
 
 ## Run the file
