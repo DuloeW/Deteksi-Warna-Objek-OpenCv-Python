@@ -1,6 +1,6 @@
 # Clone this repo
 ```bash
-https://github.com/DuloeW/Deteksi-Warna-Objek-OpenCv-Python.git
+git clone https://github.com/DuloeW/Deteksi-Warna-Objek-OpenCv-Python.git
 ```
 
 # Instalation
