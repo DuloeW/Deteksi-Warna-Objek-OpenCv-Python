@@ -40,17 +40,42 @@ def get_detection_rules(mode):
         return []
 
 # Contoh: mode awal, bisa diganti ke mode lain sesuai kebutuhan
-current_mode = "drop_indoor"  # Pilihan: object_indoor, drop_indoor, exit_gate, drop_outdoor, finish_start_right, finish_start_left
+current_mode = "object_indoor"  # Pilihan: object_indoor, drop_indoor, exit_gate, drop_outdoor, finish_start_right, finish_start_left
 detection_rules = get_detection_rules(current_mode)
 
 while True:
     ret, frame = cap.read()
     if not ret: break
     frame = imutils.resize(frame, width=600)
-    lab_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
+    # Mengurangi efek bayangan dengan histogram equalization
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    blurred = cv2.GaussianBlur(gray, (7, 7), 0)
-    canny_edges = cv2.Canny(blurred, 50, 150)
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    enhanced = clahe.apply(gray)
+    
+    # Untuk color labeling, gunakan frame yang brightness-corrected
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    hsv[:,:,2] = clahe.apply(hsv[:,:,2])  # Enhance value channel
+    corrected_frame = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+    lab_frame = cv2.cvtColor(corrected_frame, cv2.COLOR_BGR2LAB)
+    
+    blurred = cv2.GaussianBlur(enhanced, (5, 5), 0)
+
+    # Multiple thresholding untuk menangani variasi pencahayaan
+    _, thresh1 = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY_INV)
+    _, thresh2 = cv2.threshold(blurred, 120, 255, cv2.THRESH_BINARY_INV)
+    adaptive = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                     cv2.THRESH_BINARY_INV, 11, 2)
+    
+    canny_edges = cv2.Canny(blurred, 40, 120)
+    
+    # Gabungkan semua hasil
+    combined = cv2.bitwise_or(thresh1, thresh2)
+    combined = cv2.bitwise_or(combined, adaptive)
+    combined = cv2.bitwise_or(combined, canny_edges)
+    
+    # Morphological closing untuk menyambung kontur yang terputus
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+    combined = cv2.morphologyEx(combined, cv2.MORPH_CLOSE, kernel, iterations=2)
 
     # --- Border area tengah ---
     h, w = frame.shape[:2]
@@ -60,13 +85,13 @@ while True:
     box_x2, box_y2 = center_x + box_w // 2, center_y + box_h // 2
     cv2.rectangle(frame, (box_x1, box_y1), (box_x2, box_y2), (255, 0, 0), 2)
 
-    contours, hierarchy = cv2.findContours(canny_edges.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(combined.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     if hierarchy is not None:
         hierarchy = hierarchy[0]
         used_child = set()
         for i, c in enumerate(contours):
-            if cv2.contourArea(c) < 500: continue
+            if cv2.contourArea(c) < 200: continue  # Turunkan threshold untuk objek 3D
             shape = sd.detect(c)
             color = cl.label(lab_frame, c)
 
@@ -105,6 +130,14 @@ while True:
                     if box_x1 <= cX <= box_x2 and box_y1 <= cY <= box_y2:
                         cv2.putText(frame, "CENTERED", (center_x - 80, box_y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 3)
                     break
+
+    # Tampilkan window kontur (outline)
+    outline_frame = frame.copy()
+    cv2.drawContours(outline_frame, contours, -1, (0, 255, 255), 2)
+    # cv2.imshow("Outline Kamera", outline_frame)
+    # cv2.imshow("Threshold Kamera", combined)
+    # cv2.imshow("Enhanced Gray", enhanced)
+    # cv2.imshow("Corrected Frame", corrected_frame)
 
     cv2.imshow("Deteksi Objek Spesifik", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'): break
