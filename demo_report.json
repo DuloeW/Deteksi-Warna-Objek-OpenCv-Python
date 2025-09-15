@@ -1,0 +1,61 @@
+{
+  "timestamp": "2024-01-15 14:30:25",
+  "session_duration": 60,
+  "total_detections": 45,
+  "overall": {
+    "color_accuracy": 0.78,
+    "shape_accuracy": 0.65,
+    "total_accuracy": 0.715
+  },
+  "color_performance": {
+    "red": {
+      "total_attempts": 12,
+      "correct_detections": 10,
+      "accuracy": 0.83,
+      "common_mistakes": ["orange confusion", "lighting issues"]
+    },
+    "blue": {
+      "total_attempts": 8,
+      "correct_detections": 7,
+      "accuracy": 0.875,
+      "common_mistakes": ["shadow interference"]
+    },
+    "orange": {
+      "total_attempts": 10,
+      "correct_detections": 6,
+      "accuracy": 0.6,
+      "common_mistakes": ["red confusion", "yellow confusion"]
+    }
+  },
+  "shape_performance": {
+    "circle": {
+      "total_attempts": 15,
+      "correct_detections": 8,
+      "accuracy": 0.53,
+      "common_mistakes": ["oval detection", "partial occlusion"]
+    },
+    "rectangle": {
+      "total_attempts": 12,
+      "correct_detections": 9,
+      "accuracy": 0.75,
+      "common_mistakes": ["square confusion"]
+    },
+    "square": {
+      "total_attempts": 8,
+      "correct_detections": 6,
+      "accuracy": 0.75,
+      "common_mistakes": ["rectangle confusion"]
+    }
+  },
+  "environmental_factors": {
+    "lighting_conditions": "indoor fluorescent",
+    "background": "white paper",
+    "camera_distance": "30cm",
+    "shadow_interference": true
+  },
+  "suggestions": [
+    "Improve circle detection algorithm",
+    "Add more orange color variations",
+    "Better shadow handling"
+  ]
+}
